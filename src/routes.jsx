@@ -15,12 +15,12 @@ export default function MainRoutes(){
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<PersistLogin />}>
               <Route path="/" element={<SignIn />} />
               <Route path="/register" element={<SignUp />} />
+            <Route path='/' element={<PersistLogin />}>
               <Route path="/home" element={<Home />} />
-              <Route path="*" element={<NotFound />} />
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
