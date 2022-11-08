@@ -15,9 +15,9 @@ export default function MainRoutes(){
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-              <Route path="/" element={<SignIn />} />
-              <Route path="/register" element={<SignUp />} />
-            <Route path='/' element={<PersistLogin />}>
+              <Route path="entrar" element={<SignIn />} />
+              <Route path="registro" element={<SignUp />} />
+            <Route element={<PersistLogin />}>
               <Route path="/home" element={<Home />} />
             </Route>
             <Route path="*" element={<NotFound />} />
