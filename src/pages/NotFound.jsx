@@ -24,7 +24,7 @@ export default function NotFound() {
               404
             </Typography>
             <Typography variant="h6">
-              Oops! Page não encontrada, hahah
+              Oops! Page não encontrada
             </Typography>
             <Button variant="contained" sx={{ marginTop: 2 }} onClick={() => nav('/')} >
               Voltar para o início
