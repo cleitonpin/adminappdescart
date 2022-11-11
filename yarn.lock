@@ -1255,6 +1255,11 @@ react-geocode@^0.2.3:
   dependencies:
     regenerator-runtime "^0.13.3"
 
+react-hook-form@^7.39.2:
+  version "7.39.2"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.39.2.tgz#1003ed63dcc4efc96be686e9aef481f63b58715b"
+  integrity sha512-rCeCa1+sIcgI9PjgGmev9bVqHCwYwhjkbsXitr+giQ/P0mf/AGwUBtCdKC1lRu7egrxbLwqO9cWNWpXW4FrsHA==
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"

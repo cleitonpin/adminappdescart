@@ -15,7 +15,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import { toast } from 'react-toastify';
 import * as Yup from "yup"
-
+import { formatCep, formatCnpj } from '../../utils'
 import { FormHelperText } from '@mui/material';
 import Geocode from "react-geocode";
 import { useAuth } from '../../hooks/AuthContext';
@@ -24,14 +24,6 @@ import { useNavigate } from 'react-router-dom';
 Geocode.setApiKey("AIzaSyCLCokNnTaCGSgpLlV33WPA9i5ZXU-H5vQ");
 Geocode.setLanguage("pt-BR");
 Geocode.setRegion("br");
-
-const formatCep = (cep) => {
-  return cep.replace(/(\d{5})(\d{3})/, '$1-$2');
-};
-
-const formatCnpj = (cnpj) => {
-  return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-};
 
 const validator = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Campo obrigatório"),

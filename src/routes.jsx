@@ -5,9 +5,9 @@ import { theme, themeMaterial } from './style/theme'
 
 import SignIn from './pages/Login'
 import SignUp from './pages/SignUp'
-import Home from './pages/Home'
 import PersistLogin from './components/PersistLogin'
 import NotFound from './pages/NotFound'
+import Dashboard from './pages/Home'
 
 export default function MainRoutes(){
   return (
@@ -15,10 +15,10 @@ export default function MainRoutes(){
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-              <Route path="/" element={<SignIn />} />
-              <Route path="/register" element={<SignUp />} />
+            <Route path="/" element={<SignIn />} />
+            <Route path="/register" element={<SignUp />} />
             <Route element={<PersistLogin />}>
-              <Route path="/home" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

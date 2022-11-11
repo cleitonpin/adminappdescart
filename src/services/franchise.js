@@ -11,3 +11,13 @@ export const loginFranchise = async (data) => {
 
   return response.data;
 }
+
+export const updateFranchise = async (data, id, token) => {
+  const response = await api.put(`/franchise/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+}

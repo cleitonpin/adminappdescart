@@ -9,7 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const currentFranchise = JSON.parse(localStorage.getItem("currentFranchise"));
+    const currentFranchise = JSON.parse(
+      localStorage.getItem("currentFranchise")
+    );
     setCurrentFranchise(currentFranchise);
   }, []);
 
@@ -22,7 +24,11 @@ export const AuthProvider = ({ children }) => {
     if (franchise) {
       setCurrentFranchise(franchise);
 
-      localStorage.setItem("currentFranchise", JSON.stringify(franchise));
+      localStorage.setItem(
+        "currentFranchise",
+        JSON.stringify(franchise.franchise)
+      );
+      localStorage.setItem("@token", franchise.token);
 
       setIsLogged(true);
     }
@@ -49,11 +55,28 @@ export const AuthProvider = ({ children }) => {
     return franchise;
   };
 
+  const updateField = (data) => {
+    setCurrentFranchise({ ...currentFranchise, ...data });
+    localStorage.setItem("currentFranchise", JSON.stringify(data.franchise));
+  };
+
   return (
-    <AuthContext.Provider value={{ currentFranchise, setCurrentFranchise, signIn, isLogged, signOut, signUp, loading }}>
+    <AuthContext.Provider
+      value={{
+        currentFranchise,
+        setCurrentFranchise,
+        signIn,
+        isLogged,
+        signOut,
+        signUp,
+        loading,
+        updateField,
+        setLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = () => useContext(AuthContext);

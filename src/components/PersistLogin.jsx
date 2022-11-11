@@ -7,11 +7,8 @@ export default function PersistLogin() {
   const { currentFranchise, setCurrentFranchise, loading } = useAuth()
   const franchise = localStorage.getItem('currentFranchise')
 
-  console.log('franchise', franchise)
-
   useEffect(() => {
     if (!franchise) {
-      console.log('aq')
       setCurrentFranchise(null)
     }
 
