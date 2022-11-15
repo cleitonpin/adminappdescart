@@ -21,3 +21,20 @@ export const updateFranchise = async (data, id, token) => {
 
   return response.data;
 }
+
+export const forgotPassword = async (data) => {
+  const response = await api.post("/franchise/forgot-password", data);
+
+  return response.data;
+}
+
+export const resetPassword = async (data, token) => {
+  const response = await api.post("/franchise/reset-password", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    withCredentials: false
+  });
+
+  return response.data;
+}

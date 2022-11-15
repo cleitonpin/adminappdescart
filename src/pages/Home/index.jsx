@@ -19,6 +19,8 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { ListItems, secondaryListItems } from "./listItems";
 import Account from "../../components/Account";
+import { LogoutOutlined } from "@mui/icons-material";
+import { useAuth } from "../../hooks/AuthContext";
 
 function Copyright(props) {
   return (
@@ -101,6 +103,7 @@ const renderMains = (content) => {
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
   const [content, setContent] = React.useState("Settings");
+  const { signOut } = useAuth();
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -140,11 +143,9 @@ function DashboardContent() {
           >
             Dashboard
           </Typography>
-          {/* <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
+          <IconButton color="inherit" onClick={signOut}>
+            <LogoutOutlined />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
