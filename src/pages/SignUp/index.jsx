@@ -1,25 +1,25 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import { toast } from 'react-toastify';
-import * as Yup from "yup"
-import { formatCep, formatCnpj } from '../../utils'
-import { FormHelperText } from '@mui/material';
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import { toast } from "react-toastify";
+import * as Yup from "yup";
+import { formatCep, formatCnpj } from "../../utils";
+import { FormHelperText } from "@mui/material";
 import Geocode from "react-geocode";
-import { useAuth } from '../../hooks/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../hooks/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 Geocode.setApiKey("AIzaSyCLCokNnTaCGSgpLlV33WPA9i5ZXU-H5vQ");
 Geocode.setLanguage("pt-BR");
@@ -27,33 +27,39 @@ Geocode.setRegion("br");
 
 const validator = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Campo obrigatório"),
-  password: Yup.string().min(6, "Mínimo de 6 caracteres").required("Campo obrigatório"),
-  cnpj: Yup.string().min(18, "Mínimo de 18 caracteres").required("Campo obrigatório"),
+  password: Yup.string()
+    .min(6, "Mínimo de 6 caracteres")
+    .required("Campo obrigatório"),
+  cnpj: Yup.string()
+    .min(18, "Mínimo de 18 caracteres")
+    .required("Campo obrigatório"),
   companyName: Yup.string().required("Campo obrigatório"),
-  zip: Yup.string().min(9, "Mínimo de 9 caracteres").required("Campo obrigatório"),
+  zip: Yup.string()
+    .min(9, "Mínimo de 9 caracteres")
+    .required("Campo obrigatório"),
   number: Yup.string().required("Campo obrigatório"),
 });
 
 export default function SignUp() {
-  const { signUp } = useAuth()
+  const { signUp } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
-    email: '',
-    password: '',
-    cnpj: '',
-    companyName: '',
-    type: 'franchise',
+    email: "",
+    password: "",
+    cnpj: "",
+    companyName: "",
+    type: "franchise",
   });
   const [addressData, setAddressData] = React.useState({
-    street: '',
-    city: '',
-    state: '',
-    uf: '',
-    zip: '',
-    country: '',
-    complement: '',
-    district: '',
-    number: '',
+    street: "",
+    city: "",
+    state: "",
+    uf: "",
+    zip: "",
+    country: "",
+    complement: "",
+    district: "",
+    number: "",
   });
 
   const [errors, setErrors] = React.useState({
@@ -71,17 +77,17 @@ export default function SignUp() {
 
     const keys = Object.keys(errors);
 
-    const isValid = keys.every((key) => formData[key] !== '');
-    
+    const isValid = keys.every((key) => formData[key] !== "");
+
     if (!isValid) {
-      toast.error('Preencha todos os campos');
+      toast.error("Preencha todos os campos");
       return;
     }
 
     const { results } = await Geocode.fromAddress(
       `${addressData.street}, ${addressData.number}`
     );
-    
+
     const { lat, lng } = results[0].geometry.location;
 
     const sendData = {
@@ -91,23 +97,22 @@ export default function SignUp() {
         coordinates: {
           latitude: lat,
           longitude: lng,
-        }
-      }
-    }
+        },
+      },
+    };
 
     try {
-      await signUp(sendData)
-  
-      toast.success('Cadastro realizado com sucesso', {
+      await signUp(sendData);
+
+      toast.success("Cadastro realizado com sucesso", {
         delay: 2000,
       });
 
-      navigate('/')
+      navigate("/");
     } catch (error) {
-      toast('Email ou CNPJ já cadastrado, tente outro', { type: 'error' })
+      toast("Email ou CNPJ já cadastrado, tente outro", { type: "error" });
     }
   };
-
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -125,21 +130,21 @@ export default function SignUp() {
     await validator
       .validateAt(name, { [name]: value })
       .then((data) => {
-        console.log('ok', data);
+        console.log("ok", data);
         setErrors({ ...errors, [name]: false });
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         setErrors({ ...errors, [name]: err.errors[0] });
       });
 
-    if (name === 'zip') {
-      console.log('é cep')
+    if (name === "zip") {
+      console.log("é cep");
       const response = await fetch(
         `https://viacep.com.br/ws/${addressData.zip}/json/`
       );
-      const data = (await response.json())
-  
+      const data = await response.json();
+
       setAddressData({
         ...addressData,
         district: data.bairro,
@@ -148,10 +153,9 @@ export default function SignUp() {
         uf: data.uf,
         state: data.uf,
         complement: data.complemento,
-      })
+      });
     }
   };
-
 
   return (
     <Container component="main" maxWidth="sm">
@@ -159,12 +163,12 @@ export default function SignUp() {
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -183,7 +187,9 @@ export default function SignUp() {
                 autoComplete="email"
                 value={formData.email}
                 onBlur={handleBlur}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 variant="outlined"
                 error={!!errors.email}
                 helperText={errors.email}
@@ -213,7 +219,6 @@ export default function SignUp() {
                 name="cnpj"
                 id="cnpj"
                 label="CNPJ"
-                autoFocus
                 value={formatCnpj(formData.cnpj)}
                 inputProps={{
                   maxLength: 18,
@@ -320,18 +325,28 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <FormHelperText>
-                Selecione o tipo de cadastro: PEV (Ponto de Entrega Voluntária) ou Franquia.
+                Selecione o tipo de cadastro: PEV (Ponto de Entrega Voluntária)
+                ou Franquia.
               </FormHelperText>
               <RadioGroup
-                row 
+                row
                 aria-labelledby="demo-row-radio-buttons-group-label"
                 name="row-radio-buttons-group"
               >
-                <FormControlLabel value="pev" control={<Radio />} label="PEV" onChange={handleInputChange} />
-                <FormControlLabel value="franchise" control={<Radio />} label="Franquia" onChange={handleInputChange} />
+                <FormControlLabel
+                  value="pev"
+                  control={<Radio />}
+                  label="PEV"
+                  onChange={handleInputChange}
+                />
+                <FormControlLabel
+                  value="franchise"
+                  control={<Radio />}
+                  label="Franquia"
+                  onChange={handleInputChange}
+                />
               </RadioGroup>
             </Grid>
-
           </Grid>
           <Button
             type="submit"
@@ -354,4 +369,3 @@ export default function SignUp() {
     </Container>
   );
 }
-
