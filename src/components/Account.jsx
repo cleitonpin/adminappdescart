@@ -15,6 +15,7 @@ import { updateFranchise } from "../services/franchise";
 import { formatCep, formatCnpj } from "../utils";
 import { useNavigate } from "react-router-dom";
 import { fetchCep } from "../services/cep";
+import { getLatLng } from "../services/google";
 
 export default function Account() {
   const franchise = JSON.parse(localStorage.getItem("currentFranchise"));
@@ -50,9 +51,19 @@ export default function Account() {
       return;
     }
 
-    console.log(data, touchedFields);
+    const coordinates = await getLatLng(
+      `${data.address.street}, ${data.address.number}`
+    );
+
+    Object.assign(data, {
+      address: {
+        ...data.address,
+        coordinates,
+      },
+    });
 
     try {
+      console.log(data);
       setLoading(true);
       const response = await updateFranchise(data, franchise._id, token);
 

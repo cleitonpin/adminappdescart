@@ -20,10 +20,7 @@ import { FormHelperText } from "@mui/material";
 import Geocode from "react-geocode";
 import { useAuth } from "../../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-Geocode.setApiKey("AIzaSyCLCokNnTaCGSgpLlV33WPA9i5ZXU-H5vQ");
-Geocode.setLanguage("pt-BR");
-Geocode.setRegion("br");
+import { getLatLng } from "../../services/google";
 
 const validator = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Campo obrigatório"),
@@ -84,7 +81,7 @@ export default function SignUp() {
       return;
     }
 
-    const { results } = await Geocode.fromAddress(
+    const { results } = await getLatLng(
       `${addressData.street}, ${addressData.number}`
     );
 
