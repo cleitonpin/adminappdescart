@@ -13,9 +13,10 @@ import { toast } from "react-toastify";
 import { useAuth } from "../hooks/AuthContext";
 import { updateFranchise } from "../services/franchise";
 import { formatCep, formatCnpj } from "../utils";
-import { useNavigate } from "react-router-dom";
 import { fetchCep } from "../services/cep";
 import { getLatLng } from "../services/google";
+
+console.log(import.meta.env.VITE_API_URL);
 
 export default function Account() {
   const franchise = JSON.parse(localStorage.getItem("currentFranchise"));
