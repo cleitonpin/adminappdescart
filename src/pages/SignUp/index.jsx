@@ -17,7 +17,6 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { formatCep, formatCnpj } from "../../utils";
 import { FormHelperText } from "@mui/material";
-import Geocode from "react-geocode";
 import { useAuth } from "../../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getLatLng } from "../../services/google";
@@ -73,27 +72,32 @@ export default function SignUp() {
     event.preventDefault();
 
     const keys = Object.keys(errors);
+    const falseFields = Object.values(errors).filter((error) => !!error);
 
-    const isValid = keys.every((key) => formData[key] !== "");
-
-    if (!isValid) {
-      toast.error("Preencha todos os campos");
+    if (falseFields.length > 0) {
+      falseFields.forEach((error, index) => {
+        toast.error(error);
+      });
       return;
     }
 
-    const { results } = await getLatLng(
+    const isValid = keys.every((key) => formData[key] !== "" || !errors[key]);
+
+    if (!isValid) {
+      return toast.error("Preencha todos os campos");
+    }
+
+    const { latitude, longitude } = await getLatLng(
       `${addressData.street}, ${addressData.number}`
     );
-
-    const { lat, lng } = results[0].geometry.location;
 
     const sendData = {
       ...formData,
       address: {
         ...addressData,
         coordinates: {
-          latitude: lat,
-          longitude: lng,
+          latitude,
+          longitude,
         },
       },
     };
@@ -106,8 +110,16 @@ export default function SignUp() {
       });
 
       navigate("/");
-    } catch (error) {
-      toast("Email ou CNPJ já cadastrado, tente outro", { type: "error" });
+    } catch (err) {
+      const { errors, message } = err.response.data;
+
+      if (Array.isArray(errors)) {
+        errors.forEach((error) => {
+          toast.error(error.message);
+        });
+      } else {
+        toast.error(message);
+      }
     }
   };
 
@@ -127,16 +139,13 @@ export default function SignUp() {
     await validator
       .validateAt(name, { [name]: value })
       .then((data) => {
-        console.log("ok", data);
         setErrors({ ...errors, [name]: false });
       })
       .catch((err) => {
-        console.log(err);
         setErrors({ ...errors, [name]: err.errors[0] });
       });
 
     if (name === "zip") {
-      console.log("é cep");
       const response = await fetch(
         `https://viacep.com.br/ws/${addressData.zip}/json/`
       );
@@ -338,7 +347,7 @@ export default function SignUp() {
                 />
                 <FormControlLabel
                   value="franchise"
-                  control={<Radio />}
+                  control={<Radio checked />}
                   label="Franquia"
                   onChange={handleInputChange}
                 />
