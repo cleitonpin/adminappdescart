@@ -18,9 +18,11 @@ export const AuthProvider = ({ children }) => {
   const signIn = async ({ email, password }) => {
     setLoading(true);
     if (isLogged) return;
+    console.log(email, password);
 
     const franchise = await loginFranchise({ email, password });
 
+    console.log(franchise);
     if (franchise) {
       setCurrentFranchise(franchise);
 
@@ -49,6 +51,13 @@ export const AuthProvider = ({ children }) => {
 
     if (franchise) {
       setCurrentFranchise(franchise);
+
+      localStorage.setItem(
+        "currentFranchise",
+        JSON.stringify(franchise.franchise)
+      );
+      localStorage.setItem("@token", franchise.token);
+
       setIsLogged(true);
     }
 

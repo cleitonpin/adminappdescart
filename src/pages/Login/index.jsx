@@ -21,21 +21,27 @@ import { useNavigate } from "react-router-dom";
 export default function SignIn() {
   const { signIn, loading, setLoading } = useAuth();
   const [seePassword, setSeePassword] = React.useState(false);
+
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
     try {
+      console.log("ok");
       await signIn({
-        email: data.get("email"),
-        password: data.get("password"),
+        email,
+        password,
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
+      console.log(error);
       toast.error(error.response?.data.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -66,7 +72,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Entrar
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -75,6 +81,7 @@ export default function SignIn() {
             label="Email"
             name="email"
             autoComplete="email"
+            onChange={(e) => setEmail(e.target.value)}
             autoFocus
           />
           <TextField
@@ -82,6 +89,7 @@ export default function SignIn() {
             required
             fullWidth
             name="password"
+            onChange={(e) => setPassword(e.target.value)}
             label="Senha"
             type={seePassword ? "text" : "password"}
             id="password"
@@ -99,7 +107,7 @@ export default function SignIn() {
             />
           </FormGroup>
           <Button
-            type="submit"
+            onClick={handleSubmit}
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}

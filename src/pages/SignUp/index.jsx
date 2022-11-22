@@ -102,25 +102,25 @@ export default function SignUp() {
       return toast.error("Endereço inválido");
     }
 
-    const sendData = {
-      ...formData,
-      address: {
-        ...addressData,
-        coordinates: {
-          latitude,
-          longitude,
-        },
-      },
-    };
-
     try {
+      const sendData = {
+        ...formData,
+        address: {
+          ...addressData,
+          coordinates: {
+            latitude,
+            longitude,
+          },
+        },
+      };
+
       await signUp(sendData);
 
       toast.success("Cadastro realizado com sucesso", {
         delay: 2000,
       });
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (err) {
       const { errors, message } = err.response.data;
 
@@ -147,7 +147,11 @@ export default function SignUp() {
         return;
       });
 
-    setFormData({ ...formData, [name]: value });
+    if (name === "cnpj") {
+      setFormData({ ...formData, [name]: formatCnpj(value) });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleAddressChange = (event) => {

@@ -1,25 +1,59 @@
-import { useEffect } from "react"
+import { useEffect } from "react";
 import { useAuth } from "../hooks/AuthContext";
 import { Outlet, Navigate } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 
 export default function PersistLogin() {
-  const { currentFranchise, setCurrentFranchise, loading } = useAuth()
-  const franchise = localStorage.getItem('currentFranchise')
+  const { currentFranchise, setCurrentFranchise, loading, setIsLoading } =
+    useAuth();
+
+  // useEffect(() => {
+  //   if (!franchise) {
+  //     setCurrentFranchise(null);
+  //   }
+
+  //   if (franchise) {
+  //     localStorage.setItem("currentFranchise", franchise);
+  //     setCurrentFranchise(franchise);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    if (!franchise) {
-      setCurrentFranchise(null)
+    let isMounted = true;
+
+    const verifyFranchise = async () => {
+      try {
+        const franchise = localStorage.getItem("currentFranchise");
+        // localStorage.setItem("currentFranchise", franchise);
+        setCurrentFranchise(franchise);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    if (!currentFranchise) {
+      verifyFranchise();
+    } else {
+      setIsLoading(false);
     }
 
-    if (franchise) {
-      localStorage.setItem('currentFranchise', franchise)
-      setCurrentFranchise(franchise)
-    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  }, [])
-
-  if (franchise) return <Outlet />
-
-  return <Navigate to="/"  />
+  return loading ? (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  ) : (
+    <Outlet />
+  );
 }
