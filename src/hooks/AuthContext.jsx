@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     setCurrentFranchise(null);
     setIsLogged(false);
     localStorage.removeItem("currentFranchise");
+    localStorage.removeItem("@token");
   };
 
   const signUp = async (data) => {

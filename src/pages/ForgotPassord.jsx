@@ -28,7 +28,7 @@ export default function ForgotPassword() {
     try {
       const data = await forgotPassword({ email });
       toast.success(data.message);
-      navigate("/", { replace: true });
+      // navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data.message);

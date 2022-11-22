@@ -20,6 +20,8 @@ import { FormHelperText } from "@mui/material";
 import { useAuth } from "../../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getLatLng } from "../../services/google";
+import { validateCep, validateCnpj } from "../../helpers/validators";
+import { fetchCep } from "../../services/cep";
 
 const validator = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Campo obrigatório"),
@@ -28,10 +30,14 @@ const validator = Yup.object().shape({
     .required("Campo obrigatório"),
   cnpj: Yup.string()
     .min(18, "Mínimo de 18 caracteres")
+    .test("cnpj", "CNPJ inválido", (value) => validateCnpj(value))
     .required("Campo obrigatório"),
   companyName: Yup.string().required("Campo obrigatório"),
   zip: Yup.string()
-    .min(9, "Mínimo de 9 caracteres")
+    .min(9, "CEP inválido")
+    .test("test-zip", "CEP inválido", (value) => {
+      return validateCep(value);
+    })
     .required("Campo obrigatório"),
   number: Yup.string().required("Campo obrigatório"),
 });
@@ -74,6 +80,13 @@ export default function SignUp() {
     const keys = Object.keys(errors);
     const falseFields = Object.values(errors).filter((error) => !!error);
 
+    const isEmptyFields = keys.every((key) => formData[key] !== "");
+
+    if (!isEmptyFields) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+
     if (falseFields.length > 0) {
       falseFields.forEach((error, index) => {
         toast.error(error);
@@ -81,15 +94,13 @@ export default function SignUp() {
       return;
     }
 
-    const isValid = keys.every((key) => formData[key] !== "" || !errors[key]);
-
-    if (!isValid) {
-      return toast.error("Preencha todos os campos");
-    }
-
     const { latitude, longitude } = await getLatLng(
       `${addressData.street}, ${addressData.number}`
     );
+
+    if (!latitude || !longitude) {
+      return toast.error("Endereço inválido");
+    }
 
     const sendData = {
       ...formData,
@@ -123,8 +134,19 @@ export default function SignUp() {
     }
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = async (event) => {
     const { name, value } = event.target;
+
+    await validator
+      .validateAt(name, { [name]: value })
+      .then((data) => {
+        setErrors({ ...errors, [name]: false });
+      })
+      .catch((err) => {
+        setErrors({ ...errors, [name]: err.errors[0] });
+        return;
+      });
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -142,24 +164,33 @@ export default function SignUp() {
         setErrors({ ...errors, [name]: false });
       })
       .catch((err) => {
+        console.log(err);
         setErrors({ ...errors, [name]: err.errors[0] });
+        return;
       });
 
-    if (name === "zip") {
-      const response = await fetch(
-        `https://viacep.com.br/ws/${addressData.zip}/json/`
-      );
-      const data = await response.json();
+    if (name === "zip" && value.length === 9) {
+      const data = await fetchCep(addressData.zip);
 
-      setAddressData({
-        ...addressData,
-        district: data.bairro,
-        street: data.logradouro,
-        city: data.localidade,
-        uf: data.uf,
-        state: data.uf,
-        complement: data.complemento,
-      });
+      if (data.erro) {
+        setErrors({ ...errors, zip: "CEP inválido" });
+
+        setAddressData({
+          zip: addressData.zip,
+        });
+      } else {
+        setAddressData({
+          ...addressData,
+          district: data.bairro,
+          street: data.logradouro,
+          city: data.localidade,
+          uf: data.uf,
+          state: data.uf,
+          complement: data.complemento,
+        });
+
+        setErrors({ ...errors, zip: false });
+      }
     }
   };
 
@@ -258,6 +289,9 @@ export default function SignUp() {
                 label="CEP"
                 id="zip"
                 autoComplete="cep"
+                inputProps={{
+                  maxLength: 9,
+                }}
                 value={formatCep(addressData.zip)}
                 onBlur={handleBlur}
                 onChange={handleAddressChange}

@@ -23,7 +23,7 @@ export default function Account() {
   const token = localStorage.getItem("@token");
   const [loading, setLoading] = useState(false);
   const { updateField, currentFranchise } = useAuth();
-  console.log(franchise.address);
+
   const {
     register,
     handleSubmit,
@@ -34,7 +34,7 @@ export default function Account() {
       email: franchise.email,
       companyName: franchise.companyName,
       address: {
-        zip: formatCep(franchise.address.zip),
+        zip: franchise.address.zip,
         district: franchise.address.district,
         street: franchise.address.street,
         number: franchise.address.number,
@@ -46,9 +46,16 @@ export default function Account() {
     },
   });
 
+  const [errors, setErrors] = useState({});
+
   const onSubmit = async (data) => {
     if (!isDirty) {
       toast.warning("Você precisa alterar algum campo para salvar");
+      return;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      toast.warning("Verifique os campos com erro");
       return;
     }
 
@@ -79,23 +86,31 @@ export default function Account() {
 
   const handleBlur = async (event) => {
     const { value, name } = event.target;
+    console.log(value.length);
 
-    if (name === "address.zip") {
+    if (name === "address.zip" && value.length === 8) {
       const address = await fetchCep(value);
-      console.log(address);
+
       if (address.erro) {
         toast.error("CEP inválido");
-        return;
-      }
 
-      setValue("address.district", address.bairro, { shouldDirty: true });
-      setValue("address.street", address.logradouro, { shouldDirty: true });
-      setValue("address.city", address.localidade, { shouldDirty: true });
-      setValue("address.uf", address.uf, { shouldDirty: true });
-      setValue("address.state", address.state, { shouldDirty: true });
-      setValue("address.complement", address.complemento, {
-        shouldDirty: true,
-      });
+        setErrors({
+          ...errors,
+          [name]: "CEP inválido",
+        });
+
+        return;
+      } else {
+        setValue("address.zip", formatCep(address.cep));
+        setValue("address.district", address.bairro, { shouldDirty: true });
+        setValue("address.street", address.logradouro, { shouldDirty: true });
+        setValue("address.city", address.localidade, { shouldDirty: true });
+        setValue("address.uf", address.uf, { shouldDirty: true });
+        setValue("address.state", address.state, { shouldDirty: true });
+        setValue("address.complement", address.complemento, {
+          shouldDirty: true,
+        });
+      }
     }
   };
 
@@ -114,38 +129,6 @@ export default function Account() {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box component="div" display="flex" mt="16px">
-          {/* <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="firstName"
-                name="firstName"
-                label="First name"
-                fullWidth
-                autoComplete="given-name"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                id="lastName"
-                name="lastName"
-                label="Last name"
-                fullWidth
-                autoComplete="family-name"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="username"
-                name="username"
-                label="Username"
-                fullWidth
-                autoComplete="username"
-              />
-            </Grid>
-          </Grid> */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -206,12 +189,17 @@ export default function Account() {
                 name="zip"
                 label="CEP"
                 id="zip"
+                inputProps={{
+                  maxLength: 8,
+                }}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                onChange={(e) => console.log("dirtyFields")}
+                // format cep
                 {...register("address.zip")}
                 autoComplete="cep"
+                error={!!errors["address.zip"]}
+                helperText={errors["address.zip"]}
                 onBlur={handleBlur}
               />
             </Grid>
