@@ -59,7 +59,6 @@ export default function SignUp() {
     state: "",
     uf: "",
     zip: "",
-    country: "",
     complement: "",
     district: "",
     number: "",
@@ -115,6 +114,8 @@ export default function SignUp() {
         },
       };
 
+      await signUp(sendData);
+
       toast.success("Cadastro realizado com sucesso", {
         delay: 2000,
       });
@@ -135,6 +136,7 @@ export default function SignUp() {
 
   const handleInputChange = async (event) => {
     const { name, value } = event.target;
+    console.log(name, value);
 
     await validator
       .validateAt(name, { [name]: value })
