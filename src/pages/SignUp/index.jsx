@@ -40,6 +40,7 @@ const validator = Yup.object().shape({
     })
     .required("Campo obrigatório"),
   number: Yup.string().required("Campo obrigatório"),
+  type: Yup.string().required("Campo obrigatório"),
 });
 
 export default function SignUp() {
@@ -113,8 +114,6 @@ export default function SignUp() {
           },
         },
       };
-
-      await signUp(sendData);
 
       toast.success("Cadastro realizado com sucesso", {
         delay: 2000,
@@ -375,19 +374,17 @@ export default function SignUp() {
               <RadioGroup
                 row
                 aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
+                name="type"
               >
                 <FormControlLabel
-                  value="pev"
-                  control={<Radio />}
+                  control={<Radio value="pev" onChange={handleInputChange} />}
                   label="PEV"
-                  onChange={handleInputChange}
                 />
                 <FormControlLabel
-                  value="franchise"
-                  control={<Radio checked />}
+                  control={
+                    <Radio value="franchise" onChange={handleInputChange} />
+                  }
                   label="Franquia"
-                  onChange={handleInputChange}
                 />
               </RadioGroup>
             </Grid>
