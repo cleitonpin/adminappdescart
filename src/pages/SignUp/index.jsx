@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { getLatLng } from "../../services/google";
 import { validateCep, validateCnpj } from "../../helpers/validators";
 import { fetchCep } from "../../services/cep";
+import useCheckMobileScreen from "../../hooks/useCheckMobileScreen";
 
 const validator = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Campo obrigatório"),
@@ -45,6 +46,7 @@ const validator = Yup.object().shape({
 
 export default function SignUp() {
   const { signUp } = useAuth();
+  const isMobile = useCheckMobileScreen();
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
     email: "",
@@ -131,6 +133,8 @@ export default function SignUp() {
       } else {
         toast.error(message);
       }
+
+      navigate("/signup", { replace: true });
     }
   };
 
@@ -286,7 +290,8 @@ export default function SignUp() {
                 helperText={errors.companyName}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 required
                 fullWidth
@@ -304,7 +309,7 @@ export default function SignUp() {
                 helperText={errors.zip}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 required
                 fullWidth
@@ -318,7 +323,7 @@ export default function SignUp() {
                 helperText={errors.number}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 fullWidth
                 name="bairro"
@@ -328,7 +333,7 @@ export default function SignUp() {
                 value={addressData.district}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 fullWidth
                 name="complemento"
@@ -338,7 +343,7 @@ export default function SignUp() {
                 value={addressData.complement}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 fullWidth
                 name="localidade"
@@ -348,7 +353,7 @@ export default function SignUp() {
                 value={addressData.city}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 fullWidth
                 name="state"
@@ -358,7 +363,7 @@ export default function SignUp() {
                 value={addressData.state}
               />
             </Grid>
-            <Grid item xs={2} sm={4} md={4}>
+            <Grid item xs={isMobile ? 12 : 2} sm={4} md={4}>
               <TextField
                 fullWidth
                 name="street"
