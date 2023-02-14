@@ -385,7 +385,7 @@ export default function SignUp() {
               >
                 <FormControlLabel
                   control={<Radio value="pev" onChange={handleInputChange} />}
-                  label="PEV"
+                  label="Ponto de Entrega Voluntária - PEV"
                 />
                 <FormControlLabel
                   control={
